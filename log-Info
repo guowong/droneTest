@@ -1,0 +1,113 @@
+ubuntu@ip-172-31-84-180:~$ docker ps 
+CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                           NAMES
+47dd936576ee        drone/agent:1.0.0-rc.5   "/bin/drone-agent ag…"   About an hour ago   Up About an hour                                    drone_drone-agent_1
+9f318e786fbd        drone/drone:1.0.0-rc.5   "/bin/drone-server"      About an hour ago   Up About an hour    443/tcp, 0.0.0.0:8000->80/tcp   drone_drone-server_1
+ubuntu@ip-172-31-84-180:~$ 
+
+
+ubuntu@ip-172-31-84-180:~$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+node                10                  90fa0611d45b        30 hours ago        904MB
+drone/drone         1                   6859f6c9b190        6 days ago          63.1MB
+drone/agent         1                   99a7e0a32bf3        6 days ago          18.3MB
+drone/agent         1.0.0-rc.5          3edfaaf29fb1        4 months ago        16.8MB
+drone/drone         1.0.0-rc.5          bb8f8c6c4e9b        4 months ago        64.6MB
+drone/git           latest              00d7b517c0b9        4 months ago        67.6MB
+ubuntu@ip-172-31-84-180:~$ 
+ubuntu@ip-172-31-84-180:~$ 
+
+
+ubuntu@ip-172-31-84-180:~$ sudo systemctl status nginx
+● nginx.service - A high performance web server and a reverse proxy server
+   Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+   Active: active (running) since Thu 2019-06-06 04:19:10 UTC; 1h 16min ago
+  Process: 2043 ExecStop=/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid (code=exited, status=2)
+  Process: 2056 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+  Process: 2053 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+ Main PID: 2059 (nginx)
+    Tasks: 3
+   Memory: 2.8M
+      CPU: 1.131s
+   CGroup: /system.slice/nginx.service
+           ├─2059 nginx: master process /usr/sbin/nginx -g daemon on; master_process on
+           ├─2060 nginx: worker process                           
+           └─2061 nginx: worker process                           
+
+Jun 06 04:19:10 ip-172-31-84-180 systemd[1]: Starting A high performance web server and a reverse proxy server...
+Jun 06 04:19:10 ip-172-31-84-180 systemd[1]: Started A high performance web server and a reverse proxy server.
+ubuntu@ip-172-31-84-180:~$ 
+
+
+ubuntu@ip-172-31-84-180:~$ sudo systemctl status drone
+● drone.service - Drone server
+   Loaded: loaded (/etc/systemd/system/drone.service; disabled; vendor preset: enabled)
+   Active: active (running) since Thu 2019-06-06 04:19:18 UTC; 1h 16min ago
+ Main PID: 2065 (docker-compose)
+    Tasks: 5
+   Memory: 49.3M
+      CPU: 15.177s
+   CGroup: /system.slice/drone.service
+           ├─2065 /usr/local/bin/docker-compose -f /etc/drone/docker-compose.yml up
+           └─2067 /usr/local/bin/docker-compose -f /etc/drone/docker-compose.yml up
+
+Jun 06 04:19:21 ip-172-31-84-180 docker-compose[2065]: Status: Downloaded newer image for drone/agent:1.0.0-rc.5
+Jun 06 04:19:21 ip-172-31-84-180 docker-compose[2065]: Recreating drone_drone-server_1 ...
+Jun 06 04:19:22 ip-172-31-84-180 docker-compose[2065]: [88B blob data]
+Jun 06 04:19:32 ip-172-31-84-180 docker-compose[2065]: [107B blob data]
+Jun 06 04:19:32 ip-172-31-84-180 docker-compose[2065]: drone-server_1  | {"level":"info","msg":"main: local build runner disabled","time":"2019-06-06T04:19:22Z"}
+Jun 06 04:19:32 ip-172-31-84-180 docker-compose[2065]: drone-server_1  | {"acme":false,"host":"drone-guo.tk","level":"info","msg":"main: starting the http server","port":":80","proto":"http","time":"2019-06-06T04:1
+Jun 06 04:19:32 ip-172-31-84-180 docker-compose[2065]: drone-server_1  | {"interval":1800000000000,"level":"info","msg":"main: cron schedule enabled","time":"2019-06-06T04:19:22Z"}
+Jun 06 04:19:32 ip-172-31-84-180 docker-compose[2065]: drone-agent_1   | {"level":"info","msg":"starting the build runner","server":"https://drone-guo.tk","threads":2,"time":"2019-06-06T04:19:32Z"}
+Jun 06 04:20:39 ip-172-31-84-180 docker-compose[2065]: drone-agent_1   | {"arch":"amd64","build":4,"level":"info","machine":"\"local\"","msg":"runner: start execution","os":"linux","pipeline":"default","repo":"guow
+Jun 06 04:21:12 ip-172-31-84-180 docker-compose[2065]: drone-agent_1   | {"arch":"amd64","build":4,"error":null,"level":"info","machine":"\"local\"","msg":"runner: execution complete","os":"linux","pipeline":"defau
+ubuntu@ip-172-31-84-180:~$ 
+
+
+ubuntu@ip-172-31-84-180:~$ netstat -anpt
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:443             0.0.0.0:*               LISTEN      -               
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      -               
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -               
+tcp        0    352 172.31.84.180:22        24.5.90.74:51618        ESTABLISHED -               
+tcp        0      0 127.0.0.1:32896         127.0.0.1:8000          ESTABLISHED -               
+tcp        0      0 172.31.84.180:443       34.204.27.101:44816     ESTABLISHED -               
+tcp        0      0 172.18.0.1:47370        172.18.0.2:80           ESTABLISHED -               
+tcp        0      0 172.31.84.180:443       34.204.27.101:44792     TIME_WAIT   -               
+tcp        0      0 172.31.84.180:443       34.204.27.101:44786     TIME_WAIT   -               
+tcp        0      0 172.18.0.1:47376        172.18.0.2:80           ESTABLISHED -               
+tcp        0      0 172.18.0.1:47358        172.18.0.2:80           TIME_WAIT   -               
+tcp        0      0 172.31.84.180:443       34.204.27.101:44810     ESTABLISHED -               
+tcp        0      0 127.0.0.1:32890         127.0.0.1:8000          ESTABLISHED -               
+tcp        0      0 172.18.0.1:47364        172.18.0.2:80           TIME_WAIT   -               
+tcp6       0      0 :::443                  :::*                    LISTEN      -               
+tcp6       0      0 :::8000                 :::*                    LISTEN      -               
+tcp6       0      0 :::80                   :::*                    LISTEN      -               
+tcp6       0      0 :::22                   :::*                    LISTEN      -               
+tcp6       0      0 127.0.0.1:8000          127.0.0.1:32896         ESTABLISHED -               
+tcp6       0      0 127.0.0.1:8000          127.0.0.1:32872         TIME_WAIT   -               
+tcp6       0      0 127.0.0.1:8000          127.0.0.1:32866         TIME_WAIT   -               
+tcp6       0      0 127.0.0.1:8000          127.0.0.1:32890         ESTABLISHED -               
+ubuntu@ip-172-31-84-180:~$ 
+
+
+
+ubuntu@ip-172-31-84-180:~$ docker logs -f drone_drone-server_1
+{"level":"info","msg":"main: local build runner disabled","time":"2019-06-06T04:19:22Z"}
+{"acme":false,"host":"drone-guo.tk","level":"info","msg":"main: starting the http server","port":":80","proto":"http","time":"2019-06-06T04:19:22Z","url":"http://drone-guo.tk"}
+{"interval":1800000000000,"level":"info","msg":"main: cron schedule enabled","time":"2019-06-06T04:19:22Z"}
+
+^C
+ubuntu@ip-172-31-84-180:~$ 
+
+
+
+ubuntu@ip-172-31-84-180:~$ docker logs -f drone_drone-agent_1
+{"level":"info","msg":"starting the build runner","server":"https://drone-guo.tk","threads":2,"time":"2019-06-06T04:19:32Z"}
+{"arch":"amd64","build":4,"level":"info","machine":"\"local\"","msg":"runner: start execution","os":"linux","pipeline":"default","repo":"guowong/droneTest","stage":1,"time":"2019-06-06T04:20:39Z"}
+{"arch":"amd64","build":4,"error":null,"level":"info","machine":"\"local\"","msg":"runner: execution complete","os":"linux","pipeline":"default","repo":"guowong/droneTest","stage":1,"time":"2019-06-06T04:21:12Z"}
+^C
+ubuntu@ip-172-31-84-180:~$ 
+
